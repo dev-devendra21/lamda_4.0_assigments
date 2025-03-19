@@ -5,7 +5,7 @@ const { message } = require("telegraf/filters");
 const { jokesApi } = require("./api/jokes");
 const { jobsApi } = require("./api/jobs");
 
-const bot = new Telegraf(process.env.BOT_TOKEN);
+const bot = new Telegraf(process.env.BOT_TOKEN, { polling: true });
 
 bot.start((ctx) => {
   ctx.reply(
@@ -34,7 +34,16 @@ bot.command("Jokes", async (ctx) => {
 
 // Jobs API
 bot.command("Jobs", async (ctx) => {
-  const jobs = await jobsApi();
+  console.log(ctx);
+  const userMessage = ctx.message.text.replace("/Jobs", "").trim();
+
+  if (!userMessage) {
+    return ctx.reply(
+      "📝 Please enter a job title\n" + "Example: `/Jobs Frontend Developer`"
+    );
+  }
+
+  const jobs = await jobsApi(userMessage);
   if (jobs && jobs.length > 0) {
     jobs.forEach((job) => {
       const {
@@ -99,4 +108,5 @@ bot.command("Sample_Song", (ctx) => {
 
 bot.launch();
 
-console.log("Bot is running...");
+process.once("SIGINT", () => bot.stop("SIGINT"));
+process.once("SIGTERM", () => bot.stop("SIGTERM"));

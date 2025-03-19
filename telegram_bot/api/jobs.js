@@ -1,6 +1,6 @@
 const { Axios } = require("../axios");
 
-async function jobsApi() {
+async function jobsApi(title) {
   const result = await Axios(
     "GET",
     "https://linkedin-jobs-api2.p.rapidapi.com/active-jb-24h",
@@ -9,7 +9,7 @@ async function jobsApi() {
       "x-rapidapi-host": process.env.JOBS_API_HOST,
     },
     {
-      title_filter: "Front end developer",
+      title_filter: title,
       location_filter: "India",
       type_filter: "FULL_TIME, INTERN",
     }
